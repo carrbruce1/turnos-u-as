@@ -38,7 +38,15 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: var(--wine);
+}
+
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Este rgba usa el tono de tu var(--cream) al 85% de opacidad para dejar ver la foto */
+  background-color: rgba(250, 245, 239, 0.85);
+  z-index: -1; 
 }
 
 /* ---------- HEADER ---------- */
@@ -76,17 +84,18 @@
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--cream);
+  color: var(--wine); /* Cambiado a oscuro */
   line-height: 1.1;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, .5);
+  text-shadow: none; /* Sombra eliminada para fondos claros */
 }
 .hero-sub {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-style: italic;
   font-size: 1.05rem;
-  color: #ead9c3;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .5);
+  color: var(--muted); /* Cambiado a gris/tierra */
+  text-shadow: none;
 }
+
 .orn { color: var(--gold); font-size: .7rem; margin: 0 .35rem; vertical-align: middle; }
 
 /* ---------- MAIN / CARD ---------- */
@@ -298,15 +307,27 @@
 }
 .btn.block { width: 100%; margin-top: .5rem; }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
-.btn-primary { background: var(--wine); color: #f0dcc0; border-color: var(--wine); }
-.btn-primary:hover:not(:disabled) { background: var(--rose-deep); border-color: var(--rose-deep); color: #fff; }
-.btn-ghost { background: transparent; color: var(--wine); border-color: var(--line); }
-.btn-ghost:hover { border-color: var(--wine); }
-.btn-confirm {
-  background: linear-gradient(135deg, var(--rose-deep), var(--rose));
-  color: #fff; box-shadow: 0 8px 20px rgba(165, 99, 107, .35);
+.btn-primary {
+  background-color: #F3E8DF;
+  color: #4a2a30; /* Texto en tono vino/oscuro para que sea legible */
+  border: 1.5px solid #d8beaf;
 }
-.btn-confirm:hover:not(:disabled) { transform: translateY(-1px); }
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #E5D3C4;
+  color: #4a2a30;
+  border-color: #b98f5a;
+}
+
+.btn-confirm {
+  /* Degradado en tonos beige/crema */
+  background: linear-gradient(135deg, var(--gold), #e8cfa3);
+  color: var(--wine); /* Texto oscuro para contrastar */
+  box-shadow: 0 8px 20px rgba(185, 143, 90, 0.35); /* Sombra dorada */
+}
+.btn-confirm:hover:not(:disabled) { 
+  transform: translateY(-1px); 
+}
 
 /* ---------- ESTADOS ---------- */
 .card.status { max-width: 440px; text-align: center; margin-top: 1rem; padding: 2rem 1.25rem; }
@@ -331,24 +352,39 @@
 .footer {
   position: relative;
   z-index: 1;
-  background: rgba(74, 42, 48, .82);
+  background: rgba(250, 245, 239, 0.9); /* Fondo crema con transparencia */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-top: 3px solid var(--gold);
   padding: 1.5rem 1rem;
 }
-.footer-inner {
-  max-width: 680px; margin: 0 auto;
-  display: flex; flex-direction: column; align-items: center; gap: .9rem; text-align: center;
+.footer-brand h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem; 
+  letter-spacing: 2px; 
+  text-transform: uppercase; 
+  color: var(--wine); /* Texto oscuro */
 }
-.social { display: flex; gap: .6rem; }
+.footer-brand p { 
+  color: var(--muted); 
+  font-size: .78rem; 
+  margin-top: .25rem; 
+}
 .social a {
   width: 40px; height: 40px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--gold); background: rgba(255,255,255,.06);
+  border: 1px solid var(--gold); 
+  background: rgba(185, 143, 90, 0.15); /* Fondo beige suave en lugar de blanco */
   transition: background .15s;
 }
-.social a:hover { background: rgba(255,255,255,.16); }
+.social a:hover { 
+  background: rgba(185, 143, 90, 0.3); 
+}
+/* Si tus íconos de redes (img) son blancos, puedes oscurecerlos con este filtro: */
+.social img { 
+  width: 20px; height: 20px; object-fit: contain; 
+  filter: brightness(0) saturate(100%) invert(18%) sepia(21%) saturate(1335%) hue-rotate(307deg) brightness(97%) contrast(93%); /* Color equivalente a var(--wine) */
+}
 .social img { width: 20px; height: 20px; object-fit: contain; }
 .footer-brand h3 {
   font-family: 'Cormorant Garamond', Georgia, serif;
