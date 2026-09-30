@@ -1,0 +1,97 @@
+<header class="main-header">
+  <div class="header-content">
+    <span class="orn">✦</span>
+    <h1 class="brand-title">Turnillos</h1>
+    <span class="orn">✦</span>
+  </div>
+</header>
+
+<main>
+  <section class="formulario-contenido">
+    <div class="contenido-reserva">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-card" novalidate>
+        <h3>Iniciar sesión</h3>
+        <p class="subtitle">Acceso exclusivo para personal</p>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="correo@ejemplo.com"
+            autocomplete="email"
+            [class.is-invalid]="f('email')?.invalid && f('email')?.touched">
+          @if (f('email')?.invalid && f('email')?.touched) {
+            <span class="error-msg">Ingresá un email válido</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            [class.is-invalid]="f('password')?.invalid && f('password')?.touched">
+          @if (f('password')?.invalid && f('password')?.touched) {
+            <span class="error-msg">
+              @if (f('password')?.errors?.['required']) {
+                La contraseña es requerida
+              } @else {
+                Mínimo 6 caracteres
+              }
+            </span>
+          }
+        </div>
+
+        <button type="submit" [disabled]="cargando" class="btn-submit">
+          Ingresar
+        </button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL -->
+@if (mostrarModal) {
+  <div class="modal-overlay">
+    <div class="modal-card">
+
+      @if (tipoModal === 'cargando') {
+        <div class="modal-body">
+          <div class="spinner"></div>
+          <h3>Iniciando sesión…</h3>
+          <p>Validando tus credenciales, aguardá un instante.</p>
+        </div>
+      }
+
+      @if (tipoModal === 'exito') {
+        <div class="modal-body">
+          <div class="icon-circle exito-icon">✓</div>
+          <h2>¡Bienvenido!</h2>
+          <p>Sesión iniciada correctamente. Redirigiendo…</p>
+        </div>
+      }
+
+      @if (tipoModal === 'error') {
+        <div class="modal-body">
+          <div class="icon-circle error-icon">✕</div>
+          <h2>Error de ingreso</h2>
+          <p>{{ errorLogin }}</p>
+          <button type="button" class="btn-reintentar" (click)="cerrarModal()">Reintentar</button>
+        </div>
+      }
+
+    </div>
+  </div>
+}
+
+<footer class="main-footer">
+  <div class="footer-brand">
+    <img src="img/bcstudio.png" alt="BC Studio Logo" class="footer-logo">
+    <span>Desarrollado por <strong>BC Studio</strong></span>
+  </div>
+</footer>
