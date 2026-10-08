@@ -69,9 +69,11 @@
                       @if (srv.descripcion) {
                         <span class="servicio-desc">{{ srv.descripcion }}</span>
                       }
-                      <small>{{ srv.duracion }} min</small>
+                      <div class="servicio-meta">
+                        <small>{{ srv.duracion }} min</small>
+                        <span class="servicio-precio">${{ srv.precio }}</span>
+                      </div>
                     </div>
-                    <span class="servicio-precio">${{ srv.precio }}</span>
                   </div>
                 } @empty {
                   <p class="empty">No hay servicios disponibles en este momento.</p>
