@@ -12,6 +12,7 @@ export interface Reserva {
   telefono_cliente?: string;
   email_cliente?: string;
   servicio?: string;
+  notas?: string | null;
   fecha: string;
   hora: string;
   estado: 'pendiente' | 'confirmado' | 'en_proceso' | 'finalizado' | 'rechazado';

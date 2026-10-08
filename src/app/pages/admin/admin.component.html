@@ -5,76 +5,94 @@
       <h2>{{ nombreBarberia || 'Panel Admin' }}</h2>
       <p class="user-name">Hola, {{ nombreUsuario }}</p>
     </div>
-
     <nav class="menu">
-      <button 
-        [class.active]="vistaActual === 'turnos'" 
+      <button
+        class="menu-item"
+        [class.active]="vistaActual === 'turnos'"
         (click)="verVista('turnos')">
-        📋 Turnos
+        <span class="menu-icon">
+          <img src="icono/calendario.png" alt="">
+        </span>
+        <span class="menu-text">Turnos</span>
       </button>
-      <button 
-        [class.active]="vistaActual === 'historial'" 
+      <button
+        class="menu-item"
+        [class.active]="vistaActual === 'historial'"
         (click)="verVista('historial')">
-        📜 Historial
+        <span class="menu-icon">
+          <img src="icono/historial.png" alt="">
+        </span>
+        <span class="menu-text">Historial</span>
       </button>
-      <button (click)="abrirAjustes()">
-        ⚙️ Ajustes del Local
+      <button
+        class="menu-item"
+        (click)="abrirAjustes()">
+        <span class="menu-icon">
+          <img src="icono/ajustes.png" alt="">
+        </span>
+        <span class="menu-text">Ajustes</span>
       </button>
     </nav>
-
     <div class="sidebar-footer">
-      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+      <button
+        class="btn-logout"
+        (click)="cerrarSesion()">
+        Cerrar Sesión
+      </button>
     </div>
   </aside>
-
   <!-- Contenido Principal -->
   <main class="content">
-    
     <!-- VISTA: TURNOS ACTIVOS -->
-    <section *ngIf="vistaActual === 'turnos'" class="vista-seccion">
+    <section
+      *ngIf="vistaActual === 'turnos'"
+      class="vista-seccion">
       <header class="section-header">
         <div>
           <h1>Gestión de Turnos</h1>
-          <p>Administrá las citas y reservas pendientes del local.</p>
+          <p>
+            Administrá las citas y reservas pendientes del local.
+          </p>
         </div>
         <div class="stats-pills">
-          <span class="pill primary">En proceso: {{ cantidadEnProceso }}</span>
-          <span class="pill danger">Cancelados: {{ cantidadRechazados }}</span>
+          <span class="pill primary">
+            En proceso: {{ cantidadEnProceso }}
+          </span>
+          <span class="pill danger">
+            Cancelados: {{ cantidadRechazados }}
+          </span>
         </div>
       </header>
-
       <!-- Filtros y Búsqueda -->
       <div class="filter-bar">
-        <input 
-          type="text" 
-          [(ngModel)]="searchTerm" 
-          (input)="aplicarFiltros()" 
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="aplicarFiltros()"
           placeholder="Buscar cliente, servicio o teléfono...">
-
         <div class="btn-group-filter">
-          <button 
-            [class.active]="estadoFiltro === 'en_proceso'" 
+          <button
+            [class.active]="estadoFiltro === 'en_proceso'"
             (click)="filtrarPorEstado('en_proceso')">
             Activos
           </button>
-          <button 
-            [class.active]="estadoFiltro === 'confirmado'" 
+          <button
+            [class.active]="estadoFiltro === 'confirmado'"
             (click)="filtrarPorEstado('confirmado')">
             Confirmados
           </button>
-          <button 
-            [class.active]="estadoFiltro === 'pendiente'" 
+          <button
+            [class.active]="estadoFiltro === 'pendiente'"
             (click)="filtrarPorEstado('pendiente')">
             Pendientes
           </button>
-          <button 
-            [class.active]="estadoFiltro === 'rechazado'" 
+          <button
+            [class.active]="estadoFiltro === 'rechazado'"
             (click)="filtrarPorEstado('rechazado')">
             Rechazados
           </button>
         </div>
       </div>
-
       <!-- Tabla de Turnos -->
       <div class="table-container">
         <table>
@@ -83,6 +101,7 @@
               <th>Cliente</th>
               <th>Teléfono</th>
               <th>Servicio</th>
+              <th>Notas</th>
               <th>Fecha</th>
               <th>Hora</th>
               <th>Estado</th>
@@ -91,39 +110,59 @@
           </thead>
           <tbody>
             <tr *ngFor="let turno of turnosFiltrados">
-              <td><strong>{{ turno.nombre_cliente || 'Sin Nombre' }}</strong></td>
-              <td>{{ turno.telefono_cliente || '-' }}</td>
-              <td>{{ turno.servicio || 'General' }}</td>
-              <td>{{ formatearFechaLatina(turno.fecha) }}</td>
-              <td>{{ turno.hora }} hs</td>
               <td>
-                <span class="badge" [ngClass]="turno.estado">
+                <strong>
+                  {{ turno.nombre_cliente || 'Sin Nombre' }}
+                </strong>
+              </td>
+              <td>
+                {{ turno.telefono_cliente || '-' }}
+              </td>
+              <td>
+                {{ turno.servicio || 'General' }}
+              </td>
+              <td class="notas-cell">
+                {{ turno.notas || '-' }}
+              </td>
+              <td>
+                {{ formatearFechaLatina(turno.fecha) }}
+              </td>
+              <td>
+                {{ turno.hora }} hs
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="turno.estado">
                   {{ turno.estado | uppercase }}
                 </span>
               </td>
               <td class="acciones-cell">
-                <button 
+                <button
                   *ngIf="turno.estado !== 'confirmado' && turno.estado !== 'finalizado' && turno.estado !== 'rechazado'"
-                  class="btn-sm btn-success" 
+                  class="btn-sm btn-success"
                   (click)="confirmarYEnviarWhatsApp(turno)">
                   Confirmar & WA
                 </button>
-                <button 
+                <button
                   *ngIf="turno.estado === 'confirmado'"
-                  class="btn-sm btn-primary" 
+                  class="btn-sm btn-primary"
                   (click)="cambiarEstadoTurno(turno.id, 'finalizado')">
                   Finalizar
                 </button>
-                <button 
+                <button
                   *ngIf="turno.estado !== 'rechazado' && turno.estado !== 'finalizado'"
-                  class="btn-sm btn-danger" 
+                  class="btn-sm btn-danger"
                   (click)="cancelarTurno(turno.id)">
                   Cancelar
                 </button>
               </td>
             </tr>
             <tr *ngIf="turnosFiltrados.length === 0">
-              <td colspan="7" class="text-center empty-msg">
+              <td
+                colspan="8"
+                class="text-center empty-msg">
+
                 No se encontraron turnos con los filtros seleccionados.
               </td>
             </tr>
@@ -131,22 +170,23 @@
         </table>
       </div>
     </section>
-
     <!-- VISTA: HISTORIAL -->
-    <section *ngIf="vistaActual === 'historial'" class="vista-seccion">
+    <section
+      *ngIf="vistaActual === 'historial'"
+      class="vista-seccion">
       <header class="section-header">
         <h1>Historial de Turnos Finalizados</h1>
-        <p>Registro histórico de citas completadas.</p>
+        <p>
+          Registro histórico de citas completadas.
+        </p>
       </header>
-
       <div class="filter-bar">
-        <input 
-          type="text" 
-          [(ngModel)]="searchTerm" 
-          (input)="aplicarFiltros()" 
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="aplicarFiltros()"
           placeholder="Buscar en el historial...">
       </div>
-
       <div class="table-container">
         <table>
           <thead>
@@ -154,6 +194,7 @@
               <th>Cliente</th>
               <th>Teléfono</th>
               <th>Servicio</th>
+              <th>Notas</th>
               <th>Fecha</th>
               <th>Hora</th>
               <th>Estado</th>
@@ -161,17 +202,34 @@
           </thead>
           <tbody>
             <tr *ngFor="let turno of historialFiltrado">
-              <td>{{ turno.nombre_cliente || 'Sin Nombre' }}</td>
-              <td>{{ turno.telefono_cliente || '-' }}</td>
-              <td>{{ turno.servicio }}</td>
-              <td>{{ formatearFechaLatina(turno.fecha) }}</td>
-              <td>{{ turno.hora }} hs</td>
               <td>
-                <span class="badge finalizado">FINALIZADO</span>
+                {{ turno.nombre_cliente || 'Sin Nombre' }}
+              </td>
+              <td>
+                {{ turno.telefono_cliente || '-' }}
+              </td>
+              <td>
+                {{ turno.servicio }}
+              </td>
+              <td class="notas-cell">
+                {{ turno.notas || '-' }}
+              </td>
+              <td>
+                {{ formatearFechaLatina(turno.fecha) }}
+              </td>
+              <td>
+                {{ turno.hora }} hs
+              </td>
+              <td>
+                <span class="badge finalizado">
+                  FINALIZADO
+                </span>
               </td>
             </tr>
             <tr *ngIf="historialFiltrado.length === 0">
-              <td colspan="6" class="text-center empty-msg">
+              <td
+                colspan="7"
+                class="text-center empty-msg">
                 No hay turnos finalizados registrados.
               </td>
             </tr>
@@ -179,73 +237,86 @@
         </table>
       </div>
     </section>
-
   </main>
 </div>
-
 <!-- MODAL DE AJUSTES DEL LOCAL -->
-<div class="modal-overlay" *ngIf="mostrarModalAjustes">
+<div
+  class="modal-overlay"
+  *ngIf="mostrarModalAjustes">
   <div class="modal-card modal-lg">
     <header class="modal-header">
       <h2>Ajustes del Local</h2>
-      <button class="btn-close" (click)="cerrarAjustes()">✕</button>
+      <button
+        class="btn-close"
+        (click)="cerrarAjustes()">
+        ✕
+      </button>
     </header>
-
     <!-- Pestañas de Navegación -->
     <div class="tabs-header">
-      <button 
-        [class.active]="pestanaAjustes === 'servicios'" 
+      <button
+        [class.active]="pestanaAjustes === 'servicios'"
         (click)="cambiarPestanaAjustes('servicios')">
-        ✂️ Servicios
+         Servicios
       </button>
-      <button 
-        [class.active]="pestanaAjustes === 'branding'" 
+      <button
+        [class.active]="pestanaAjustes === 'branding'"
         (click)="cambiarPestanaAjustes('branding')">
-        🖼️ Banner & Logo
+         Banner & Logo
       </button>
-      <button 
-        [class.active]="pestanaAjustes === 'horarios'" 
+      <button
+        [class.active]="pestanaAjustes === 'horarios'"
         (click)="cambiarPestanaAjustes('horarios')">
-        ⏰ Horarios de Atención
+         Horarios de Atención
       </button>
-      <button 
-        [class.active]="pestanaAjustes === 'feriados'" 
+      <button
+        [class.active]="pestanaAjustes === 'feriados'"
         (click)="cambiarPestanaAjustes('feriados')">
-        📅 Días Cierre y Excepciones
+         Días Cierre y Excepciones
       </button>
     </div>
-
     <div class="modal-body">
-
       <!-- Pestaña 1: SERVICIOS (CON DESCRIPCIÓN) -->
-      <div *ngIf="pestanaAjustes === 'servicios'" class="tab-content">
+      <div
+        *ngIf="pestanaAjustes === 'servicios'"
+        class="tab-content">
         <h3>Agregar Nuevo Servicio</h3>
         <div class="form-grid">
           <div class="form-group">
             <label>Nombre del Servicio</label>
-            <input type="text" [(ngModel)]="nuevoServicio.nombre" placeholder="Ej. Corte Degradado">
+            <input
+              type="text"
+              [(ngModel)]="nuevoServicio.nombre"
+              placeholder="Ingrese servicio">
           </div>
-
           <div class="form-group">
             <label>Precio ($)</label>
-            <input type="number" [(ngModel)]="nuevoServicio.precio" placeholder="Ej. 5000">
+            <input
+              type="number"
+              [(ngModel)]="nuevoServicio.precio"
+              placeholder="Ingrese precio">
           </div>
-
           <div class="form-group">
             <label>Duración (minutos)</label>
-            <input type="number" [(ngModel)]="nuevoServicio.duracion" placeholder="30">
+            <input
+              type="number"
+              [(ngModel)]="nuevoServicio.duracion"
+              placeholder="30">
           </div>
-
           <div class="form-group full-width">
             <label>Descripción</label>
-            <input type="text" [(ngModel)]="nuevoServicio.descripcion" placeholder="Ej. Incluye lavado, peinado y perfilado de patillas">
+            <input
+              type="text"
+              [(ngModel)]="nuevoServicio.descripcion"
+              placeholder="Ingrese una descripcion">
           </div>
         </div>
-
-        <button class="btn-primary mt-3" (click)="guardarNuevoServicio()">Agregar Servicio</button>
-
+        <button
+          class="btn-primary mt-3"
+          (click)="guardarNuevoServicio()">
+          Agregar Servicio
+        </button>
         <hr class="divider" />
-
         <h3>Listado de Servicios</h3>
         <div class="table-container">
           <table class="tabla-servicios">
@@ -255,229 +326,341 @@
                 <th>Descripción</th>
                 <th>Duración</th>
                 <th>Precio</th>
-                <th class="text-right">Acciones</th>
+                <th class="text-right">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let s of listaServicios">
-                <td><strong>{{ s.nombre }}</strong></td>
-
+                <td>
+                  <strong>
+                    {{ s.nombre }}
+                  </strong>
+                </td>
                 <!-- Columna Descripción con edición integrada -->
                 <td>
-                  <ng-container *ngIf="servicioEditandoId === s.id; else verDesc">
-                    <input type="text" [(ngModel)]="descripcionEditando" class="input-inline">
+                  <ng-container
+                    *ngIf="servicioEditandoId === s.id; else verDesc">
+                    <input
+                      type="text"
+                      [(ngModel)]="descripcionEditando"
+                      class="input-inline">
                   </ng-container>
                   <ng-template #verDesc>
-                    <span class="text-muted">{{ s.descripcion || '-' }}</span>
+                    <span class="text-muted">
+                      {{ s.descripcion || '-' }}
+                    </span>
                   </ng-template>
                 </td>
-
-                <td>{{ s.duracion }} min</td>
-
+                <td>
+                  {{ s.duracion }} min
+                </td>
                 <!-- Columna Precio con edición integrada -->
                 <td>
-                  <ng-container *ngIf="servicioEditandoId === s.id; else verPrecio">
-                    <input type="number" [(ngModel)]="precioEditando" class="input-inline-sm">
+                  <ng-container
+                    *ngIf="servicioEditandoId === s.id; else verPrecio">
+                    <input
+                      type="number"
+                      [(ngModel)]="precioEditando"
+                      class="input-inline-sm">
                   </ng-container>
                   <ng-template #verPrecio>
                     ${{ s.precio || 0 }}
                   </ng-template>
                 </td>
-
                 <td class="acciones-cell text-right">
-                  <button 
-                    *ngIf="servicioEditandoId !== s.id" 
-                    class="btn-sm btn-secondary" 
+                  <button
+                    *ngIf="servicioEditandoId !== s.id"
+                    class="btn-sm btn-secondary"
                     (click)="iniciarEdicionServicio(s)">
                     Editar
                   </button>
-                  <button 
-                    *ngIf="servicioEditandoId === s.id" 
-                    class="btn-sm btn-success" 
+                  <button
+                    *ngIf="servicioEditandoId === s.id"
+                    class="btn-sm btn-success"
                     (click)="editarPrecioServicio(s)">
                     Guardar
                   </button>
-
-                  <button 
-                    *ngIf="servicioEditandoId === s.id" 
-                    class="btn-sm btn-outline" 
+                  <button
+                    *ngIf="servicioEditandoId === s.id"
+                    class="btn-sm btn-outline"
                     (click)="cancelarEdicionServicio()">
                     Cancelar
                   </button>
-
-                  <button 
-                    (click)="eliminarServicio(s.id)" 
+                  <button
+                    (click)="eliminarServicio(s.id)"
                     class="btn-sm btn-danger">
                     Eliminar
                   </button>
                 </td>
               </tr>
               <tr *ngIf="listaServicios.length === 0">
-                <td colspan="5" class="text-center empty-msg">No hay servicios registrados.</td>
+                <td
+                  colspan="5"
+                  class="text-center empty-msg">
+                  No hay servicios registrados.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-
       <!-- Pestaña 2: BRANDING (BANNER Y LOGO) -->
-      <div *ngIf="pestanaAjustes === 'branding'" class="tab-content">
+      <div
+        *ngIf="pestanaAjustes === 'branding'"
+        class="tab-content">
         <div class="form-grid">
-          
           <!-- Drag & Drop Banner -->
           <div class="form-group full-width">
             <label>Imagen de Banner</label>
-            <div 
-              class="dropzone" 
+            <div
+              class="dropzone"
               [class.dragging]="isDraggingBanner"
               (dragover)="onDragOver($event, 'banner')"
               (dragleave)="onDragLeave($event, 'banner')"
               (drop)="onDrop($event, 'banner')">
-              <input type="file" #bannerInput (change)="onFileSeleccionado($event, 'banner')" accept="image/*" hidden>
-              
-              <div *ngIf="datosLocal.banner_url" class="preview-box">
-                <img [src]="datosLocal.banner_url" alt="Banner Preview">
+              <input
+                type="file"
+                #bannerInput
+                (change)="onFileSeleccionado($event, 'banner')"
+                accept="image/*"
+                hidden>
+              <div
+                *ngIf="datosLocal.banner_url"
+                class="preview-box">
+                <img
+                  [src]="datosLocal.banner_url"
+                  alt="Banner Preview">
               </div>
-
               <div class="dropzone-text">
-                <p>Arrastrá y soltá la imagen acá o <button type="button" class="btn-link" (click)="bannerInput.click()">seleccioná desde tu equipo</button></p>
+                <p>
+                  Arrastrá y soltá la imagen acá o
+                  <button
+                    type="button"
+                    class="btn-link"
+                    (click)="bannerInput.click()">
+                    seleccioná desde tu equipo
+                  </button>
+                </p>
               </div>
             </div>
           </div>
-
           <!-- Drag & Drop Logo -->
           <div class="form-group full-width">
             <label>Imagen de Logo</label>
-            <div 
-              class="dropzone" 
+            <div
+              class="dropzone"
               [class.dragging]="isDraggingLogo"
               (dragover)="onDragOver($event, 'logo')"
               (dragleave)="onDragLeave($event, 'logo')"
               (drop)="onDrop($event, 'logo')">
-              <input type="file" #logoInput (change)="onFileSeleccionado($event, 'logo')" accept="image/*" hidden>
-
-              <div *ngIf="datosLocal.logo_url" class="preview-box logo">
-                <img [src]="datosLocal.logo_url" alt="Logo Preview">
+              <input
+                type="file"
+                #logoInput
+                (change)="onFileSeleccionado($event, 'logo')"
+                accept="image/*"
+                hidden>
+              <div
+                *ngIf="datosLocal.logo_url"
+                class="preview-box logo">
+                <img
+                  [src]="datosLocal.logo_url"
+                  alt="Logo Preview">
               </div>
-
               <div class="dropzone-text">
-                <p>Arrastrá y soltá el logo acá o <button type="button" class="btn-link" (click)="logoInput.click()">seleccioná desde tu equipo</button></p>
+                <p>
+                  Arrastrá y soltá el logo acá o
+                  <button
+                    type="button"
+                    class="btn-link"
+                    (click)="logoInput.click()">
+                    seleccioná desde tu equipo
+                  </button>
+                </p>
               </div>
             </div>
           </div>
-
         </div>
       </div>
-
       <!-- Pestaña 3: HORARIOS DE ATENCIÓN -->
-      <div *ngIf="pestanaAjustes === 'horarios'" class="tab-content">
+      <div
+        *ngIf="pestanaAjustes === 'horarios'"
+        class="tab-content">
         <div class="form-grid">
           <div class="form-group">
             <label>Hora de Apertura</label>
-            <input type="time" [(ngModel)]="datosLocal.hora_apertura">
+            <input
+              type="time"
+              [(ngModel)]="datosLocal.hora_apertura">
           </div>
-
           <div class="form-group">
             <label>Hora de Cierre</label>
-            <input type="time" [(ngModel)]="datosLocal.hora_cierre">
+            <input
+              type="time"
+              [(ngModel)]="datosLocal.hora_cierre">
           </div>
-
           <div class="form-group">
             <label>Inicio Descanso (opcional)</label>
-            <input type="time" [(ngModel)]="datosLocal.descanso_inicio">
+            <input
+              type="time"
+              [(ngModel)]="datosLocal.descanso_inicio">
           </div>
-
           <div class="form-group">
             <label>Fin Descanso (opcional)</label>
-            <input type="time" [(ngModel)]="datosLocal.descanso_fin">
+            <input
+              type="time"
+              [(ngModel)]="datosLocal.descanso_fin">
           </div>
         </div>
       </div>
-
       <!-- Pestaña 4: DÍAS DE CIERRE Y EXCEPCIONES -->
-      <div *ngIf="pestanaAjustes === 'feriados'" class="tab-content">
+      <div
+        *ngIf="pestanaAjustes === 'feriados'"
+        class="tab-content">
         <h3>Días Cerrados Habituales</h3>
         <div class="days-checkbox-group">
-          <button 
-            *ngFor="let dia of diasSemanaOpciones" 
+          <button
+            *ngFor="let dia of diasSemanaOpciones"
             type="button"
-            class="btn-day" 
+            class="btn-day"
             [class.selected]="estaDiaCerrado(dia.num)"
             (click)="toggleDiaCerrado(dia.num)">
             {{ dia.nombre }}
           </button>
         </div>
-
         <hr class="divider" />
-
-        <h3>Bloqueos de Fecha / Excepciones Específicas</h3>
+        <h3>
+          Bloqueos de Fecha / Excepciones Específicas
+        </h3>
         <div class="form-grid">
           <div class="form-group">
             <label>Fecha a modificar</label>
-            <input type="date" [(ngModel)]="fechaBloqueo">
+            <input
+              type="date"
+              [(ngModel)]="fechaBloqueo">
           </div>
-
           <div class="form-group">
             <label>Tipo de Excepción</label>
-            <select [(ngModel)]="cerradoTotalExcepcion">
-              <option [ngValue]="true">Cerrado Todo el Día</option>
-              <option [ngValue]="false">Horario Especial</option>
+            <select
+              [(ngModel)]="cerradoTotalExcepcion">
+              <option [ngValue]="true">
+                Cerrado Todo el Día
+              </option>
+              <option [ngValue]="false">
+                Horario Especial
+              </option>
             </select>
           </div>
-
           <ng-container *ngIf="!cerradoTotalExcepcion">
             <div class="form-group">
               <label>Apertura Especial</label>
-              <input type="time" [(ngModel)]="horaAperturaExcepcion">
+              <input
+                type="time"
+                [(ngModel)]="horaAperturaExcepcion">
             </div>
-
             <div class="form-group">
               <label>Cierre Especial</label>
-              <input type="time" [(ngModel)]="horaCierreExcepcion">
+              <input
+                type="time"
+                [(ngModel)]="horaCierreExcepcion">
             </div>
           </ng-container>
-
           <div class="form-group full-width">
             <label>Motivo (opcional)</label>
-            <input type="text" [(ngModel)]="motivoBloqueo" placeholder="Ej. Feriado Nacional / Mantenimiento">
+            <input
+              type="text"
+              [(ngModel)]="motivoBloqueo"
+              placeholder="Ej. Feriado Nacional / Mantenimiento">
           </div>
         </div>
-
-        <button class="btn-primary mt-2" (click)="guardarExcepcionFecha()">Agregar Excepción</button>
-
+        <button
+          class="btn-primary mt-2"
+          (click)="guardarExcepcionFecha()">
+          Agregar Excepción
+        </button>
         <ul class="excepciones-list mt-3">
           <li *ngFor="let exc of excepciones">
             <div>
-              <strong>{{ formatearFechaLatina(exc.fecha) }}</strong> — 
-              <span *ngIf="exc.es_cerrado" class="text-danger">CERRADO</span>
-              <span *ngIf="!exc.es_cerrado" class="text-success">Horario: {{ exc.hora_apertura }} a {{ exc.hora_cierre }} hs</span>
-              <span *ngIf="exc.motivo" class="text-muted"> ({{ exc.motivo }})</span>
+              <strong>
+                {{ formatearFechaLatina(exc.fecha) }}
+              </strong>
+              —
+              <span
+                *ngIf="exc.es_cerrado"
+                class="text-danger">
+                CERRADO
+              </span>
+              <span
+                *ngIf="!exc.es_cerrado"
+                class="text-success">
+                Horario:
+                {{ exc.hora_apertura }}
+                a
+                {{ exc.hora_cierre }}
+                hs
+              </span>
+              <span
+                *ngIf="exc.motivo"
+                class="text-muted">
+                ({{ exc.motivo }})
+              </span>
             </div>
-            <button class="btn-link text-danger" (click)="eliminarExcepcionFecha(exc.fecha)">Eliminar</button>
+            <button
+              class="btn-link text-danger"
+              (click)="eliminarExcepcionFecha(exc.fecha)">
+              Eliminar
+            </button>
           </li>
         </ul>
       </div>
-
     </div>
-
     <!-- Footer del Modal -->
-    <footer class="modal-footer" *ngIf="pestanaAjustes !== 'servicios'">
-      <button class="btn-secondary" (click)="cerrarAjustes()">Cancelar</button>
-      <button class="btn-primary" (click)="guardarAjustes()">Guardar Cambios</button>
+    <footer
+      class="modal-footer"
+      *ngIf="pestanaAjustes !== 'servicios'">
+      <button
+        class="btn-secondary"
+        (click)="cerrarAjustes()">
+        Cancelar
+      </button>
+      <button
+        class="btn-primary"
+        (click)="guardarAjustes()">
+        Guardar Cambios
+      </button>
     </footer>
   </div>
 </div>
-
 <!-- MODAL NOTIFICACIONES (FEEDBACK) -->
-<div class="modal-overlay" *ngIf="mostrarModal">
+<div
+  class="modal-overlay"
+  *ngIf="mostrarModal">
   <div class="modal-card modal-sm text-center">
-    <div class="status-icon" [ngClass]="tipoModal">
-      <span *ngIf="tipoModal === 'cargando'" class="spinner">⏳</span>
-      <span *ngIf="tipoModal === 'exito'">✅</span>
-      <span *ngIf="tipoModal === 'error'">❌</span>
+    <div
+      class="status-icon"
+      [ngClass]="tipoModal">
+      <span *ngIf="tipoModal === 'cargando'" class="spinner">
+        ⏳
+      </span>
+      <span *ngIf="tipoModal === 'exito'">
+        ✅
+      </span>
+      <span *ngIf="tipoModal === 'error'">
+        ❌
+      </span>
     </div>
-    <h2>{{ mensajeModal }}</h2>
-    <p class="subtitulo">{{ subtituloModal }}</p>
-    <button *ngIf="tipoModal !== 'cargando'" class="btn-primary mt-3" (click)="cerrarModal()">Entendido</button>
+    <h2>
+      {{ mensajeModal }}
+    </h2>
+    <p class="subtitulo">
+      {{ subtituloModal }}
+    </p>
+    <button
+      *ngIf="tipoModal !== 'cargando'"
+      class="btn-primary mt-3"
+      (click)="cerrarModal()">
+      Entendido
+    </button>
   </div>
 </div>

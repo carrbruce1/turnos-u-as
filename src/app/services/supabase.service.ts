@@ -299,4 +299,15 @@ export class SupabaseService {
       return null;
     }
   }
+
+  async signIn(email: string, password?: string) {
+    return await this.login(email, password || '');
+  }
+
+  // Método para solicitar el mail de restablecimiento de contraseña
+  async resetPasswordForEmail(email: string) {
+    return await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`
+    });
+  }
 }

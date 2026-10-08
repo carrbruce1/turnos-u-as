@@ -30,19 +30,25 @@
 
           <div class="step" [class.active]="pasoActual === 2" [class.done]="pasoActual > 2">
             <div class="step-dot">@if (pasoActual > 2) { ✓ } @else { 2 }</div>
-            <span class="step-label">Fecha y hora</span>
+            <span class="step-label">Detalles</span>
           </div>
           <div class="step-line" [class.done]="pasoActual > 2"></div>
 
-          <div class="step" [class.active]="pasoActual === 3">
-            <div class="step-dot">3</div>
-            <span class="step-label">Tus datos</span>
+          <div class="step" [class.active]="pasoActual === 3" [class.done]="pasoActual > 3">
+            <div class="step-dot">@if (pasoActual > 3) { ✓ } @else { 3 }</div>
+            <span class="step-label">Horario</span>
+          </div>
+          <div class="step-line" [class.done]="pasoActual > 3"></div>
+
+          <div class="step" [class.active]="pasoActual === 4">
+            <div class="step-dot">4</div>
+            <span class="step-label">Datos</span>
           </div>
         </div>
 
         <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
 
-          <!-- PASO 1 -->
+          <!-- PASO 1: SERVICIO -->
           @if (pasoActual === 1) {
             <div class="pane">
               <div class="pane-head">
@@ -55,14 +61,11 @@
                   <div class="servicio" [class.sel]="f('servicio')?.value === srv.nombre" (click)="seleccionarServicio(srv.nombre)">
                     <div class="servicio-info">
                       <strong>{{ srv.nombre }}</strong>
-
                       @if (srv.descripcion) {
                         <span class="servicio-desc">{{ srv.descripcion }}</span>
                       }
-
                       <small>{{ srv.duracion }} min</small>
                     </div>
-
                     <span class="servicio-precio">${{ srv.precio }}</span>
                   </div>
                 } @empty {
@@ -71,19 +74,45 @@
               </div>
 
               <div class="actions end">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  [disabled]="!f('servicio')?.value"
-                  (click)="siguientePaso()">
-                  Siguiente →
-                </button>
+                <button type="button" class="btn btn-primary" [disabled]="!f('servicio')?.value" (click)="siguientePaso()">Siguiente →</button>
               </div>
             </div>
           }
 
-          <!-- PASO 2 -->
+          <!-- PASO 2: DETALLES / OBSERVACIONES (opcional) -->
           @if (pasoActual === 2) {
+            <div class="pane">
+              <div class="pane-head">
+                <h2>¿Algo para tener en cuenta?</h2>
+                <p>Es opcional. Si no tenés nada para aclarar, continuá.</p>
+              </div>
+
+              <div class="chips">
+                <button type="button" class="chip" (click)="agregarNota('Quiero un diseño específico: ')">Diseño específico</button>
+                <button type="button" class="chip" (click)="agregarNota('Tengo una patología: ')">Patología</button>
+                <button type="button" class="chip" (click)="agregarNota('Tengo una uña rota o quebrada. ')">Uña rota</button>
+              </div>
+
+              <div class="field">
+                <label for="notas">Observaciones <span class="opt">(opcional)</span></label>
+                <textarea
+                  id="notas"
+                  formControlName="notas"
+                  rows="4"
+                  maxlength="300"
+                  placeholder="Ej: Quiero un diseño con flores, o tengo una uña quebrada en la mano derecha"></textarea>
+                <span class="contador">{{ f('notas')?.value?.length || 0 }}/300</span>
+              </div>
+
+              <div class="actions between">
+                <button type="button" class="btn btn-ghost" (click)="pasoAnterior()">← Volver</button>
+                <button type="button" class="btn btn-primary" (click)="siguientePaso()">Continuar →</button>
+              </div>
+            </div>
+          }
+
+          <!-- PASO 3: FECHA Y HORA -->
+          @if (pasoActual === 3) {
             <div class="pane">
               <div class="pane-head">
                 <h2>Día y horario</h2>
@@ -92,33 +121,15 @@
 
               <div class="week-nav">
                 <span class="mes">{{ nombreMesActual }}</span>
-
                 <div class="nav-btns">
-                  <button
-                    type="button"
-                    class="nav-btn"
-                    aria-label="Semana anterior"
-                    (click)="cambiarSemana(-1)">
-                    ‹
-                  </button>
-
-                  <button
-                    type="button"
-                    class="nav-btn"
-                    aria-label="Semana siguiente"
-                    (click)="cambiarSemana(1)">
-                    ›
-                  </button>
+                  <button type="button" class="nav-btn" aria-label="Semana anterior" (click)="cambiarSemana(-1)">‹</button>
+                  <button type="button" class="nav-btn" aria-label="Semana siguiente" (click)="cambiarSemana(1)">›</button>
                 </div>
               </div>
 
               <div class="week">
                 @for (col of diasSemanaVista; track $index) {
-                  <div
-                    class="dia"
-                    [class.cerrado]="col.cerrado"
-                    [class.sel]="col.fechaStr === fechaSeleccionadaStr">
-
+                  <div class="dia" [class.cerrado]="col.cerrado" [class.sel]="col.fechaStr === fechaSeleccionadaStr">
                     <div class="dia-head">
                       <span class="dia-nombre">{{ col.nombreDia }}</span>
                       <span class="dia-num">{{ col.numeroDia }}</span>
@@ -129,19 +140,15 @@
                         <span class="badge-cerrado">Cerrado</span>
                       } @else {
                         @for (slot of col.horarios; track $index) {
-
                           @if (slot.ocupado) {
                             <span class="slot taken">{{ slot.hora }}</span>
                           } @else {
-                            <button
-                              type="button"
-                              class="slot"
+                            <button type="button" class="slot"
                               [class.sel]="col.fechaStr === fechaSeleccionadaStr && slot.hora === horaSeleccionada"
                               (click)="seleccionarSlot(col.fechaStr, slot.hora)">
                               {{ slot.hora }}
                             </button>
                           }
-
                         }
                       }
                     </div>
@@ -150,26 +157,14 @@
               </div>
 
               <div class="actions between">
-                <button
-                  type="button"
-                  class="btn btn-ghost"
-                  (click)="pasoAnterior()">
-                  ← Volver
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  [disabled]="!fechaSeleccionadaStr || !horaSeleccionada"
-                  (click)="siguientePaso()">
-                  Siguiente →
-                </button>
+                <button type="button" class="btn btn-ghost" (click)="pasoAnterior()">← Volver</button>
+                <button type="button" class="btn btn-primary" [disabled]="!fechaSeleccionadaStr || !horaSeleccionada" (click)="siguientePaso()">Siguiente →</button>
               </div>
             </div>
           }
 
-          <!-- PASO 3 -->
-          @if (pasoActual === 3) {
+          <!-- PASO 4: DATOS PERSONALES -->
+          @if (pasoActual === 4) {
             <div class="pane">
               <div class="pane-head">
                 <h2>Tus datos</h2>
@@ -179,84 +174,37 @@
               <div class="fields">
                 <div class="field">
                   <label for="nombre">Nombre</label>
-
-                  <input
-                    type="text"
-                    id="nombre"
-                    formControlName="nombre"
-                    placeholder="Ej: Camila"
-                    autocomplete="given-name">
-
+                  <input type="text" id="nombre" formControlName="nombre" placeholder="Ej: Camila" autocomplete="given-name">
                   @if (f('nombre')?.invalid && f('nombre')?.touched) {
-                    <span class="error">
-                      Ingresá un nombre válido (mínimo 2 caracteres).
-                    </span>
+                    <span class="error">Ingresá un nombre válido (mínimo 2 caracteres).</span>
                   }
                 </div>
 
                 <div class="field">
                   <label for="apellido">Apellido</label>
-
-                  <input
-                    type="text"
-                    id="apellido"
-                    formControlName="apellido"
-                    placeholder="Ej: Pérez"
-                    autocomplete="family-name">
-
+                  <input type="text" id="apellido" formControlName="apellido" placeholder="Ej: Pérez" autocomplete="family-name">
                   @if (f('apellido')?.invalid && f('apellido')?.touched) {
-                    <span class="error">
-                      Ingresá un apellido válido (mínimo 2 caracteres).
-                    </span>
+                    <span class="error">Ingresá un apellido válido (mínimo 2 caracteres).</span>
                   }
                 </div>
 
                 <div class="field">
                   <label for="telefono">Teléfono / WhatsApp</label>
-
-                  <input
-                    type="tel"
-                    id="telefono"
-                    formControlName="telefono"
-                    placeholder="Ej: 11 1234 5678"
-                    autocomplete="tel">
-
+                  <input type="tel" id="telefono" formControlName="telefono" placeholder="Ej: 11 1234 5678" autocomplete="tel">
                   @if (f('telefono')?.invalid && f('telefono')?.touched) {
-                    <span class="error">
-                      Ingresá un teléfono válido.
-                    </span>
+                    <span class="error">Ingresá un teléfono válido.</span>
                   }
                 </div>
               </div>
 
               <div class="resumen">
-                <div class="resumen-row">
-                  <span>Servicio</span>
-                  <strong>{{ f('servicio')?.value }}</strong>
-                </div>
-
-                <div class="resumen-row">
-                  <span>Fecha y hora</span>
-                  <strong>
-                    {{ formatearFechaLarga(fechaSeleccionadaStr) }} · {{ horaSeleccionada }} hs
-                  </strong>
-                </div>
+                <div class="resumen-row"><span>Servicio</span><strong>{{ f('servicio')?.value }}</strong></div>
+                <div class="resumen-row"><span>Fecha y hora</span><strong>{{ formatearFechaLarga(fechaSeleccionadaStr) }} · {{ horaSeleccionada }} hs</strong></div>
               </div>
 
               <div class="actions between">
-                <button
-                  type="button"
-                  class="btn btn-ghost"
-                  (click)="pasoAnterior()">
-                  ← Volver
-                </button>
-
-                <button
-                  type="submit"
-                  class="btn btn-confirm"
-                  [disabled]="cargando || reservaForm.invalid || !fechaSeleccionadaStr || !horaSeleccionada">
-                  Confirmar reserva
-                </button>
+                <button type="button" class="btn btn-ghost" (click)="pasoAnterior()">← Volver</button>
+                <button type="submit" class="btn btn-confirm" [disabled]="cargando || reservaForm.invalid || !fechaSeleccionadaStr || !horaSeleccionada">Confirmar reserva</button>
               </div>
             </div>
           }
@@ -269,81 +217,36 @@
     @if (mostrarModal) {
       <section class="card status">
 
-        <!-- CARGANDO -->
         @if (tipoModal === 'cargando') {
           <div class="status-body">
             <div class="spinner"></div>
-
             <h2>Procesando tu reserva…</h2>
           </div>
         }
 
-        <!-- ÉXITO -->
         @if (tipoModal === 'exito') {
           <div class="status-body">
-
             <div class="status-icon ok">✓</div>
-
             <h2>¡Reserva confirmada!</h2>
-
-            <p class="status-text">
-              Hola <strong>{{ resumenReservaModal.nombre_cliente }}</strong>, te esperamos ✦
-            </p>
+            <p class="status-text">Hola <strong>{{ resumenReservaModal.nombre_cliente }}</strong>, te esperamos ✦</p>
 
             <div class="resumen full">
-
-              <div class="resumen-row">
-                <span>Servicio</span>
-                <strong>{{ resumenReservaModal.servicio }}</strong>
-              </div>
-
-              <div class="resumen-row">
-                <span>Fecha</span>
-                <strong>{{ resumenReservaModal.fechaFormateada }}</strong>
-              </div>
-
-              <div class="resumen-row">
-                <span>Hora</span>
-                <strong>{{ resumenReservaModal.hora }} hs</strong>
-              </div>
-
-              <!-- PRECIO -->
-              <div class="resumen-row">
-                <span>Precio</span>
-                <strong>${{ resumenReservaModal.precio }}</strong>
-              </div>
-
+              <div class="resumen-row"><span>Servicio</span><strong>{{ resumenReservaModal.servicio }}</strong></div>
+              <div class="resumen-row"><span>Fecha</span><strong>{{ resumenReservaModal.fechaFormateada }}</strong></div>
+              <div class="resumen-row"><span>Hora</span><strong>{{ resumenReservaModal.hora }} hs</strong></div>
+              <div class="resumen-row"><span>Precio</span><strong>${{ resumenReservaModal.precio }}</strong></div>
             </div>
 
-            <button
-              type="button"
-              class="btn btn-primary block"
-              (click)="cerrarModal()">
-              Volver al inicio
-            </button>
-
+            <button type="button" class="btn btn-primary block" (click)="cerrarModal()">Volver al inicio</button>
           </div>
         }
 
-        <!-- ERROR -->
         @if (tipoModal === 'error') {
           <div class="status-body">
-
             <div class="status-icon bad">✕</div>
-
             <h2>Ocurrió un error</h2>
-
-            <p class="status-text">
-              El turno ya fue ocupado o hubo un problema de conexión.
-            </p>
-
-            <button
-              type="button"
-              class="btn btn-primary block"
-              (click)="cerrarModal()">
-              Intentar nuevamente
-            </button>
-
+            <p class="status-text">El turno ya fue ocupado o hubo un problema de conexión.</p>
+            <button type="button" class="btn btn-primary block" (click)="cerrarModal()">Intentar nuevamente</button>
           </div>
         }
 
@@ -355,40 +258,22 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-inner">
-
       <div class="social">
-
         @if (localData?.wapp_url) {
-          <a
-            [href]="localData.wapp_url"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="WhatsApp">
-
+          <a [href]="localData.wapp_url" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
             <img src="/iconos/whatsapp.png" alt="WhatsApp">
-
           </a>
         }
-
         @if (localData?.instagram_url) {
-          <a
-            [href]="localData.instagram_url"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram">
-
+          <a [href]="localData.instagram_url" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <img src="/iconos/logo-insta.png" alt="Instagram">
-
           </a>
         }
-
       </div>
-
       <div class="footer-brand">
         <h3>{{ obtenerNombreLocal() }}</h3>
         <p>Desarrollado por <span>BC Studio</span></p>
       </div>
-
     </div>
   </footer>
 

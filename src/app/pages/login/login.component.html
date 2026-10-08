@@ -1,20 +1,24 @@
-<header class="main-header">
-  <div class="header-content">
-    <span class="orn">✦</span>
-    <h1 class="brand-title">Turnillos</h1>
-    <span class="orn">✦</span>
-  </div>
-</header>
- // modi en cosas inciertass
-<main>
-  <section class="formulario-contenido">
-    <div class="contenido-reserva">
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-card" novalidate>
-        <h3>Iniciar sesión</h3>
-        <p class="subtitle">Acceso exclusivo para personal</p>
+<main class="login-wrapper">
+  <div class="login-container">
+    
+    <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+    <div class="form-section">
+      <div class="brand-logo">
+        <span class="orn">✦</span>
+        <h1 class="brand-title">Tu Agenda</h1>
+      </div>
 
+      <div class="form-header">
+        <h2>Iniciar sesión</h2>
+        <p class="subtitle">
+          ¿No tenés una cuenta? 
+          <a (click)="onIrARegistro()" class="link-registro">Crear cuenta</a>
+        </p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-card" novalidate>
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email">E-mail</label>
           <input
             type="email"
             id="email"
@@ -47,15 +51,48 @@
           }
         </div>
 
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" formControlName="recordarme"> Recordarme
+          </label>
+          <a (click)="abrirRecuperarPassword()" class="forgot-pass">¿Olvidaste tu contraseña?</a>
+        </div>
+
         <button type="submit" [disabled]="cargando" class="btn-submit">
-          Ingresar
+          @if (!cargando) {
+            Ingresar
+          } @else {
+            Ingresando...
+          }
         </button>
       </form>
     </div>
-  </section>
+
+    <!-- COLUMNA DERECHA: SECCIÓN VISUAL / FEATURES -->
+    <div class="hero-section">
+      <div class="support-badge">
+        <span>✦ BC Studio</span>
+      </div>
+
+      <div class="hero-card">
+        <h3>Gestioná tus turnos en un solo lugar</h3>
+        <p>Ahorrá tiempo y automatizá la agenda de tu negocio sin complicaciones.</p>
+        <div class="stat-badge">
+          <span class="stat-label">Turnos del mes</span>
+          <strong class="stat-value">+150 completados</strong>
+        </div>
+      </div>
+
+      <div class="hero-footer">
+        <h3>Potenciá tu negocio</h3>
+        <p>Accedé a tu panel de control, estadísticas de ganancias e historial de clientes al instante.</p>
+      </div>
+    </div>
+
+  </div>
 </main>
 
-<!-- MODAL -->
+<!-- MODAL Y VISTAS CONDICIONALES -->
 @if (mostrarModal) {
   <div class="modal-overlay">
     <div class="modal-card">
@@ -63,16 +100,15 @@
       @if (tipoModal === 'cargando') {
         <div class="modal-body">
           <div class="spinner"></div>
-          <h3>Iniciando sesión…</h3>
-          <p>Validando tus credenciales, aguardá un instante.</p>
+          <h3>Accediendo a tu cuenta…</h3>
         </div>
       }
 
       @if (tipoModal === 'exito') {
         <div class="modal-body">
           <div class="icon-circle exito-icon">✓</div>
-          <h2>¡Bienvenido!</h2>
-          <p>Sesión iniciada correctamente. Redirigiendo…</p>
+          <h2>¡Hola de nuevo!</h2>
+          <p>Credenciales validadas. Entrando al panel</p>
         </div>
       }
 
@@ -85,13 +121,36 @@
         </div>
       }
 
+      <!-- RECUPERAR CONTRASEÑA -->
+      @if (tipoModal === 'recuperar') {
+        <div class="modal-body">
+          <h2>Recuperar contraseña</h2>
+          <p>Ingresá tu correo electrónico y te enviaremos un enlace de recuperación.</p>
+          <div class="form-group" style="width: 100%; text-align: left; margin-top: 0.5rem;">
+            <input type="email" [(ngModel)]="emailRecuperacion" placeholder="correo@ejemplo.com">
+          </div>
+          <button type="button" class="btn-reintentar" [disabled]="cargando" (click)="enviarMailRecuperacion()">
+            @if (!cargando) {
+              Enviar enlace
+            } @else {
+              Enviando...
+            }
+          </button>
+          <button type="button" style="background: transparent; border: none; color: var(--muted); cursor: pointer; margin-top: 0.5rem;" (click)="cerrarModal()">
+            Cancelar
+          </button>
+        </div>
+      }
+
+      @if (tipoModal === 'recuperar-exito') {
+        <div class="modal-body">
+          <div class="icon-circle exito-icon">✓</div>
+          <h2>¡Correo enviado!</h2>
+          <p>Revisá tu bandeja de entrada para restablecer tu clave.</p>
+          <button type="button" class="btn-reintentar" (click)="cerrarModal()">Entendido</button>
+        </div>
+      }
+
     </div>
   </div>
 }
-
-<footer class="main-footer">
-  <div class="footer-brand">
-    <img src="img/bcstudio.png" alt="BC Studio Logo" class="footer-logo">
-    <span>Desarrollado por <strong>BC Studio</strong></span>
-  </div>
-</footer>
