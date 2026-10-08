@@ -222,6 +222,16 @@ td strong { font-weight: 600; }
 .text-danger { color: var(--danger); font-weight: 600; }
 .text-success { color: var(--success); font-weight: 600; }
 
+/* Notas del turno */
+.notas-cell {
+  max-width: 260px;
+  min-width: 160px;
+  white-space: normal;
+  word-break: break-word;
+  color: var(--text-2);
+  font-size: .85rem;
+}
+
 /* ---------- BADGES DE ESTADO ---------- */
 .badge {
   display: inline-block;
@@ -433,6 +443,7 @@ td strong { font-weight: 600; }
   transition: border-color .15s, background .15s;
 }
 .dropzone.dragging { border-color: var(--primary); background: var(--primary-soft); }
+.dropzone-text p { font-size: .85rem; }
 .preview-box { width: 100%; }
 .preview-box img {
   display: block;
@@ -444,6 +455,22 @@ td strong { font-weight: 600; }
 }
 .preview-box.logo { width: auto; }
 .preview-box.logo img { width: 96px; height: 96px; object-fit: contain; background: #fff; padding: 6px; }
+
+/* Foto de servicio (formulario y listado) */
+.dropzone-sm { padding: .75rem; gap: .6rem; }
+.preview-box.thumb { width: auto; }
+.preview-box.thumb img { width: 84px; height: 84px; max-height: none; object-fit: cover; border-radius: 8px; }
+.dropzone-mini {
+  display: inline-flex;
+  width: auto;
+  padding: .4rem .7rem;
+  border-width: 1.5px;
+  border-radius: 8px;
+  font-size: .72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dropzone-mini:hover { border-color: var(--primary); color: var(--primary); }
 
 /* ---------- DÍAS CERRADOS / EXCEPCIONES ---------- */
 .days-checkbox-group { display: flex; flex-wrap: wrap; gap: .5rem; }
@@ -663,6 +690,180 @@ td strong { font-weight: 600; }
   .modal-body { padding: 1.1rem; }
   .modal-header, .modal-footer { padding-left: 1.1rem; padding-right: 1.1rem; }
   .tabs-header { padding: 0 .75rem; }
+}
+
+/* ======================================================
+   CELULAR (hasta 768px)
+   Las tablas pasan a tarjetas, los modales suben desde abajo
+   ====================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Barra superior y menú ---------- */
+  .menu { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .menu::-webkit-scrollbar { display: none; }
+  .menu .menu-item {
+    width: auto;
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: .5rem .9rem;
+    gap: .5rem;
+  }
+  .menu .menu-icon,
+  .menu .menu-icon img { width: 20px; height: 20px; max-width: 20px; max-height: 20px; }
+  .menu .menu-text { font-size: .85rem; }
+
+  /* ---------- Contenido ---------- */
+  .content { padding: 1rem .85rem 2rem; }
+  .section-header { margin-bottom: 1rem; gap: .75rem; }
+  .section-header h1 { font-size: 1.25rem; }
+  .section-header p { font-size: .85rem; }
+  .stats-pills { width: 100%; }
+  .pill { padding: .35rem .75rem; font-size: .75rem; }
+
+  .filter-bar { gap: .6rem; }
+  .filter-bar input { flex: 1 1 100%; max-width: none; font-size: 16px; padding: .7rem .9rem; }
+  .btn-group-filter { width: 100%; overflow-x: auto; }
+  .btn-group-filter button { flex: 1 0 auto; white-space: nowrap; padding: .65rem .85rem; font-size: .8rem; }
+
+  /* ---------- Tablas -> tarjetas ---------- */
+  .table-container {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+  table, .tabla-servicios { display: block; min-width: 0; width: 100%; }
+  thead { display: none; }
+  tbody { display: flex; flex-direction: column; gap: .75rem; }
+
+  tbody tr {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .3rem 0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+  }
+  tbody tr:hover { background: var(--surface); }
+
+  tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .55rem 1rem;
+    border-bottom: 1px dashed var(--border);
+    text-align: right;
+    font-size: .9rem;
+    word-break: break-word;
+  }
+  tbody tr td:last-child { border-bottom: none; }
+
+  tbody td::before {
+    flex-shrink: 0;
+    text-align: left;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  /* Etiquetas: turnos (8 columnas) e historial (7 columnas) */
+  table:not(.tabla-servicios) tbody td:nth-child(1)::before { content: 'Cliente'; }
+  table:not(.tabla-servicios) tbody td:nth-child(2)::before { content: 'Teléfono'; }
+  table:not(.tabla-servicios) tbody td:nth-child(3)::before { content: 'Servicio'; }
+  table:not(.tabla-servicios) tbody td:nth-child(4)::before { content: 'Notas'; }
+  table:not(.tabla-servicios) tbody td:nth-child(5)::before { content: 'Fecha'; }
+  table:not(.tabla-servicios) tbody td:nth-child(6)::before { content: 'Hora'; }
+  table:not(.tabla-servicios) tbody td:nth-child(7)::before { content: 'Estado'; }
+
+  /* Etiquetas: servicios (6 columnas) */
+  .tabla-servicios tbody td:nth-child(1)::before { content: 'Foto'; }
+  .tabla-servicios tbody td:nth-child(2)::before { content: 'Nombre'; }
+  .tabla-servicios tbody td:nth-child(3)::before { content: 'Descripción'; }
+  .tabla-servicios tbody td:nth-child(4)::before { content: 'Duración'; }
+  .tabla-servicios tbody td:nth-child(5)::before { content: 'Precio'; }
+
+  /* Fila "sin resultados" */
+  tbody td[colspan] {
+    display: block;
+    text-align: center;
+    padding: 1.75rem 1rem !important;
+    border-bottom: none;
+  }
+  tbody td[colspan]::before { content: none !important; }
+
+  /* Notas y fotos dentro de la tarjeta */
+  .notas-cell { max-width: none; min-width: 0; font-size: .85rem; }
+  .img-thumb { width: 56px !important; height: 56px !important; border-radius: 8px !important; }
+
+  /* Campos de edición dentro de la tarjeta */
+  .input-inline, .input-inline-sm {
+    width: 60%;
+    max-width: none;
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  /* Botones de acción: ocupan todo el ancho de la tarjeta */
+  tbody td.acciones-cell {
+    flex-wrap: wrap;
+    justify-content: stretch;
+    gap: .5rem;
+    white-space: normal;
+    padding: .75rem 1rem;
+  }
+  tbody td.acciones-cell::before { content: none !important; }
+  .acciones-cell button,
+  .acciones-cell button + button { flex: 1 1 auto; margin: 0; padding: .65rem .9rem; font-size: .82rem; }
+
+  /* ---------- Modales: hoja que sube desde abajo ---------- */
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal-card {
+    max-width: none;
+    max-height: 92dvh;
+    border-radius: 18px 18px 0 0;
+  }
+  .modal-card.modal-lg { max-width: none; max-height: 94dvh; }
+
+  /* Aviso (cargando / éxito / error): centrado */
+  .modal-card.modal-sm {
+    width: calc(100% - 2rem);
+    max-width: 340px;
+    margin: auto;
+    padding: 1.5rem 1.1rem;
+    border-radius: 14px;
+  }
+
+  .modal-header { padding: .9rem 1.1rem; }
+  .modal-header h2 { font-size: 1.05rem; }
+  .btn-close { width: 36px; height: 36px; }
+
+  .tabs-header { padding: 0 .5rem; }
+  .tabs-header button { padding: .75rem .85rem; font-size: .85rem; }
+
+  .modal-body { padding: 1rem 1.1rem; }
+  .tab-content h3 { font-size: .95rem; }
+  .form-grid { gap: .85rem; }
+  .form-group input,
+  .form-group select { font-size: 16px; padding: .7rem .8rem; }
+
+  .tab-content > .btn-primary { width: 100%; }
+  .modal-footer {
+    padding: .8rem 1.1rem calc(.8rem + env(safe-area-inset-bottom));
+  }
+  .modal-footer button { flex: 1; padding: .75rem 1rem; }
+
+  .dropzone { padding: 1rem; }
+  .preview-box img { max-height: 140px; }
+  .dropzone-mini { padding: .55rem .8rem; }
+
+  .days-checkbox-group { gap: .4rem; }
+  .btn-day { flex: 1 1 calc(25% - .4rem); text-align: center; padding: .65rem .3rem; }
+
+  .excepciones-list li { flex-direction: column; align-items: flex-start; gap: .4rem; }
+  .excepciones-list li .btn-link { align-self: flex-end; }
 }
 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
