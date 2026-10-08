@@ -27,6 +27,8 @@ export interface ExcepcionHorario {
   motivo: string | null;
 }
 
+export type TipoImagen = 'banner' | 'logo' | 'servicio' | 'servicioEdit';
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -63,13 +65,14 @@ export class AdminComponent implements OnInit, OnDestroy {
   pestanaAjustes: 'servicios' | 'branding' | 'horarios' | 'feriados' = 'servicios';
 
   // DATOS FORMULARIO AJUSTES
-  nuevoServicio = { nombre: '', descripcion:'',precio: null as number | null, duracion: 30 };
+  nuevoServicio = { nombre: '', descripcion: '', precio: null as number | null, duracion: 30, foto_url: '' };
   listaServicios: any[] = [];
 
   // ESTADO DE EDICIÓN DE SERVICIO
   servicioEditandoId: number | string | null = null;
   precioEditando: number | null = null;
   descripcionEditando: string = " ";
+  fotoUrlEditando: string = '';
 
   datosLocal = {
     banner_url: '',
@@ -87,6 +90,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   previewLogo: string | null = null;
   isDraggingBanner = false;
   isDraggingLogo = false;
+  isDraggingServicio = false;
 
   // --- BLOQUEO DE DÍAS DE LA SEMANA (RECURRENTE, columna "es_cerrado") ---
   diasSemanaOpciones = [
@@ -148,8 +152,6 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.datosLocal.descanso_inicio = (local.descanso_inicio || '').substring(0, 5);
     this.datosLocal.descanso_fin = (local.descanso_fin || '').substring(0, 5);
 
-    // "es_cerrado" es un int8[] en Supabase: puede llegar como números o como strings numéricas.
-    // Number(n) normaliza cualquiera de los dos casos.
     this.diasCerrados = Array.isArray(local.es_cerrado)
       ? local.es_cerrado.map((n: any) => Number(n))
       : [];
@@ -408,32 +410,35 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   // --- MÉTODOS DE MANEJO DE IMÁGENES (DRAG & DROP Y SELECCIÓN) ---
-  onDragOver(event: DragEvent, tipo: 'banner' | 'logo') {
+  onDragOver(event: DragEvent, tipo: TipoImagen) {
     event.preventDefault();
     event.stopPropagation();
     if (tipo === 'banner') this.isDraggingBanner = true;
-    else this.isDraggingLogo = true;
+    else if (tipo === 'logo') this.isDraggingLogo = true;
+    else if (tipo === 'servicio' || tipo === 'servicioEdit') this.isDraggingServicio = true;
   }
 
-  onDragLeave(event: DragEvent, tipo: 'banner' | 'logo') {
+  onDragLeave(event: DragEvent, tipo: TipoImagen) {
     event.preventDefault();
     event.stopPropagation();
     if (tipo === 'banner') this.isDraggingBanner = false;
-    else this.isDraggingLogo = false;
+    else if (tipo === 'logo') this.isDraggingLogo = false;
+    else if (tipo === 'servicio' || tipo === 'servicioEdit') this.isDraggingServicio = false;
   }
 
-  onDrop(event: DragEvent, tipo: 'banner' | 'logo') {
+  onDrop(event: DragEvent, tipo: TipoImagen) {
     event.preventDefault();
     event.stopPropagation();
     if (tipo === 'banner') this.isDraggingBanner = false;
-    else this.isDraggingLogo = false;
+    else if (tipo === 'logo') this.isDraggingLogo = false;
+    else if (tipo === 'servicio' || tipo === 'servicioEdit') this.isDraggingServicio = false;
 
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       this.procesarArchivo(event.dataTransfer.files[0], tipo);
     }
   }
 
-  onFileSeleccionado(event: Event, tipo: 'banner' | 'logo') {
+  onFileSeleccionado(event: Event, tipo: TipoImagen) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.procesarArchivo(input.files[0], tipo);
@@ -441,62 +446,38 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   onDragOverBanner(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingBanner = true;
+    this.onDragOver(event, 'banner');
   }
 
   onDragLeaveBanner(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingBanner = false;
+    this.onDragLeave(event, 'banner');
   }
 
   onDropBanner(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingBanner = false;
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      this.procesarArchivo(event.dataTransfer.files[0], 'banner');
-    }
+    this.onDrop(event, 'banner');
   }
 
   onFileSelectedBanner(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.procesarArchivo(input.files[0], 'banner');
-    }
+    this.onFileSeleccionado(event, 'banner');
   }
 
   onDragOverLogo(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingLogo = true;
+    this.onDragOver(event, 'logo');
   }
 
   onDragLeaveLogo(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingLogo = false;
+    this.onDragLeave(event, 'logo');
   }
 
   onDropLogo(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingLogo = false;
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      this.procesarArchivo(event.dataTransfer.files[0], 'logo');
-    }
+    this.onDrop(event, 'logo');
   }
 
   onFileSelectedLogo(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.procesarArchivo(input.files[0], 'logo');
-    }
+    this.onFileSeleccionado(event, 'logo');
   }
 
-  procesarArchivo(file: File, tipo: 'banner' | 'logo') {
+  procesarArchivo(file: File, tipo: TipoImagen) {
     if (!file.type.startsWith('image/')) {
       this.mostrarModal = true;
       this.tipoModal = 'error';
@@ -513,10 +494,14 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.archivoBanner = file;
         this.previewBanner = result;
         this.datosLocal.banner_url = result;
-      } else {
+      } else if (tipo === 'logo') {
         this.archivoLogo = file;
         this.previewLogo = result;
         this.datosLocal.logo_url = result;
+      } else if (tipo === 'servicio') {
+        this.nuevoServicio.foto_url = result;
+      } else if (tipo === 'servicioEdit') {
+        this.fotoUrlEditando = result;
       }
       this.cdr.detectChanges();
     };
@@ -541,12 +526,13 @@ export class AdminComponent implements OnInit, OnDestroy {
         nombre: this.nuevoServicio.nombre.trim(),
         descripcion: this.nuevoServicio.descripcion.trim() || undefined,
         precio: this.nuevoServicio.precio,
-        duracion: this.nuevoServicio.duracion || 30
+        duracion: this.nuevoServicio.duracion || 30,
+        foto_url: this.nuevoServicio.foto_url.trim() || undefined
       });
 
       if (error) throw error;
 
-      this.nuevoServicio = { nombre: '', descripcion: '', precio: null, duracion: 30 };
+      this.nuevoServicio = { nombre: '', descripcion: '', precio: null, duracion: 30, foto_url: '' };
       await this.cargarServiciosDelLocal();
       this.cdr.detectChanges();
     } catch (err: any) {
@@ -563,6 +549,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.servicioEditandoId = servicio.id;
     this.precioEditando = servicio.precio;
     this.descripcionEditando = servicio.descripcion || '';
+    this.fotoUrlEditando = servicio.foto_url || '';
     this.cdr.detectChanges();
   }
 
@@ -570,6 +557,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.servicioEditandoId = null;
     this.precioEditando = null;
     this.descripcionEditando = '';
+    this.fotoUrlEditando = '';
     this.cdr.detectChanges();
   }
 
@@ -584,7 +572,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     try {
       const { error } = await this.supabaseService.actualizarServicio(servicio.id, {
         precio: precioAGuardar,
-        descripcion: this.descripcionEditando.trim() || undefined
+        descripcion: this.descripcionEditando.trim() || undefined,
+        foto_url: this.fotoUrlEditando.trim() || undefined
       });
       if (error) throw error;
 
@@ -733,6 +722,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }
   }
+
   async guardarAjustes() {
     if (!this.localIdUsuario) {
       this.cerrarAjustes();

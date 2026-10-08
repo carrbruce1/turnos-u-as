@@ -59,6 +59,11 @@
               <div class="servicios">
                 @for (srv of listaServicios; track srv.id) {
                   <div class="servicio" [class.sel]="f('servicio')?.value === srv.nombre" (click)="seleccionarServicio(srv.nombre)">
+                    @if (srv.foto_url) {
+                      <div class="servicio-img">
+                        <img [src]="srv.foto_url" [alt]="srv.nombre" loading="lazy">
+                      </div>
+                    }
                     <div class="servicio-info">
                       <strong>{{ srv.nombre }}</strong>
                       @if (srv.descripcion) {

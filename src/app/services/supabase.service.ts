@@ -14,6 +14,7 @@ export class SupabaseService {
       environment.supabaseKey
     );
   }
+
   escucharCambiosReservas(callback: () => void): RealtimeChannel {
     return this.supabase
       .channel('public:reservas')
@@ -103,7 +104,7 @@ export class SupabaseService {
       .select();
   }
 
-  // --- GESTIÓN DE SERVICIOS (Con soporte para descripción) ---
+  // --- GESTIÓN DE SERVICIOS (Con soporte para descripción y foto_url) ---
 
   async obtenerServiciosPorLocal(localId: number) {
     return await this.supabase
@@ -118,7 +119,8 @@ export class SupabaseService {
     nombre: string; 
     descripcion?: string; 
     precio: number | null; 
-    duracion: number 
+    duracion: number;
+    foto_url?: string;
   }) {
     return await this.supabase
       .from('servicios')
@@ -130,7 +132,8 @@ export class SupabaseService {
     nombre?: string; 
     descripcion?: string; 
     precio?: number | null; 
-    duracion?: number 
+    duracion?: number;
+    foto_url?: string;
   }) {
     return await this.supabase
       .from('servicios')

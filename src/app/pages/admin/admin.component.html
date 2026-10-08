@@ -41,6 +41,7 @@
       </button>
     </div>
   </aside>
+
   <!-- Contenido Principal -->
   <main class="content">
     <!-- VISTA: TURNOS ACTIVOS -->
@@ -63,6 +64,7 @@
           </span>
         </div>
       </header>
+
       <!-- Filtros y Búsqueda -->
       <div class="filter-bar">
         <input
@@ -93,6 +95,7 @@
           </button>
         </div>
       </div>
+
       <!-- Tabla de Turnos -->
       <div class="table-container">
         <table>
@@ -162,7 +165,6 @@
               <td
                 colspan="8"
                 class="text-center empty-msg">
-
                 No se encontraron turnos con los filtros seleccionados.
               </td>
             </tr>
@@ -170,6 +172,7 @@
         </table>
       </div>
     </section>
+
     <!-- VISTA: HISTORIAL -->
     <section
       *ngIf="vistaActual === 'historial'"
@@ -239,6 +242,7 @@
     </section>
   </main>
 </div>
+
 <!-- MODAL DE AJUSTES DEL LOCAL -->
 <div
   class="modal-overlay"
@@ -252,31 +256,33 @@
         ✕
       </button>
     </header>
+
     <!-- Pestañas de Navegación -->
     <div class="tabs-header">
       <button
         [class.active]="pestanaAjustes === 'servicios'"
         (click)="cambiarPestanaAjustes('servicios')">
-         Servicios
+        Servicios
       </button>
       <button
         [class.active]="pestanaAjustes === 'branding'"
         (click)="cambiarPestanaAjustes('branding')">
-         Banner & Logo
+        Banner & Logo
       </button>
       <button
         [class.active]="pestanaAjustes === 'horarios'"
         (click)="cambiarPestanaAjustes('horarios')">
-         Horarios de Atención
+        Horarios de Atención
       </button>
       <button
         [class.active]="pestanaAjustes === 'feriados'"
         (click)="cambiarPestanaAjustes('feriados')">
-         Días Cierre y Excepciones
+        Días Cierre y Excepciones
       </button>
     </div>
+
     <div class="modal-body">
-      <!-- Pestaña 1: SERVICIOS (CON DESCRIPCIÓN) -->
+      <!-- Pestaña 1: SERVICIOS -->
       <div
         *ngIf="pestanaAjustes === 'servicios'"
         class="tab-content">
@@ -303,6 +309,45 @@
               [(ngModel)]="nuevoServicio.duracion"
               placeholder="30">
           </div>
+
+          <!-- Drag & Drop / Click Foto Servicio Nuevo -->
+          <div class="form-group">
+            <label>Foto del Servicio</label>
+            <div
+              class="dropzone dropzone-sm"
+              [class.dragging]="isDraggingServicio"
+              (dragover)="onDragOver($event, 'servicio')"
+              (dragleave)="onDragLeave($event, 'servicio')"
+              (drop)="onDrop($event, 'servicio')"
+              (click)="servicioInput.click()"
+              style="cursor: pointer;">
+              <input
+                type="file"
+                #servicioInput
+                (change)="onFileSeleccionado($event, 'servicio')"
+                accept="image/*"
+                hidden>
+              <div
+                *ngIf="nuevoServicio.foto_url"
+                class="preview-box thumb">
+                <img
+                  [src]="nuevoServicio.foto_url"
+                  alt="Foto Servicio">
+              </div>
+              <div class="dropzone-text">
+                <p>
+                  Arrastrá la foto acá o
+                  <button
+                    type="button"
+                    class="btn-link"
+                    (click)="$event.stopPropagation(); servicioInput.click()">
+                    buscala en tu equipo
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group full-width">
             <label>Descripción</label>
             <input
@@ -316,12 +361,15 @@
           (click)="guardarNuevoServicio()">
           Agregar Servicio
         </button>
+
         <hr class="divider" />
+
         <h3>Listado de Servicios</h3>
         <div class="table-container">
           <table class="tabla-servicios">
             <thead>
               <tr>
+                <th>Foto</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Duración</th>
@@ -333,12 +381,40 @@
             </thead>
             <tbody>
               <tr *ngFor="let s of listaServicios">
+                <!-- Columna Foto con Dropzone en modo edición -->
+                <td>
+                  <ng-container
+                    *ngIf="servicioEditandoId === s.id; else verFoto">
+                    <div
+                      class="dropzone dropzone-mini"
+                      (click)="servicioEditInput.click()"
+                      style="cursor: pointer;">
+                      <input
+                        type="file"
+                        #servicioEditInput
+                        (change)="onFileSeleccionado($event, 'servicioEdit')"
+                        accept="image/*"
+                        hidden>
+                      <span>Subir/Cambiar</span>
+                    </div>
+                  </ng-container>
+                  <ng-template #verFoto>
+                    <img
+                      *ngIf="s.foto_url; else sinFoto"
+                      [src]="s.foto_url"
+                      [alt]="s.nombre"
+                      class="img-thumb"
+                      style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                    <ng-template #sinFoto>
+                      <span class="text-muted">—</span>
+                    </ng-template>
+                  </ng-template>
+                </td>
                 <td>
                   <strong>
                     {{ s.nombre }}
                   </strong>
                 </td>
-                <!-- Columna Descripción con edición integrada -->
                 <td>
                   <ng-container
                     *ngIf="servicioEditandoId === s.id; else verDesc">
@@ -356,7 +432,6 @@
                 <td>
                   {{ s.duracion }} min
                 </td>
-                <!-- Columna Precio con edición integrada -->
                 <td>
                   <ng-container
                     *ngIf="servicioEditandoId === s.id; else verPrecio">
@@ -397,7 +472,7 @@
               </tr>
               <tr *ngIf="listaServicios.length === 0">
                 <td
-                  colspan="5"
+                  colspan="6"
                   class="text-center empty-msg">
                   No hay servicios registrados.
                 </td>
@@ -406,12 +481,13 @@
           </table>
         </div>
       </div>
+
       <!-- Pestaña 2: BRANDING (BANNER Y LOGO) -->
       <div
         *ngIf="pestanaAjustes === 'branding'"
         class="tab-content">
         <div class="form-grid">
-          <!-- Drag & Drop Banner -->
+          <!-- Drag & Drop / Click Banner -->
           <div class="form-group full-width">
             <label>Imagen de Banner</label>
             <div
@@ -419,7 +495,9 @@
               [class.dragging]="isDraggingBanner"
               (dragover)="onDragOver($event, 'banner')"
               (dragleave)="onDragLeave($event, 'banner')"
-              (drop)="onDrop($event, 'banner')">
+              (drop)="onDrop($event, 'banner')"
+              (click)="bannerInput.click()"
+              style="cursor: pointer;">
               <input
                 type="file"
                 #bannerInput
@@ -439,14 +517,15 @@
                   <button
                     type="button"
                     class="btn-link"
-                    (click)="bannerInput.click()">
+                    (click)="$event.stopPropagation(); bannerInput.click()">
                     seleccioná desde tu equipo
                   </button>
                 </p>
               </div>
             </div>
           </div>
-          <!-- Drag & Drop Logo -->
+
+          <!-- Drag & Drop / Click Logo -->
           <div class="form-group full-width">
             <label>Imagen de Logo</label>
             <div
@@ -454,7 +533,9 @@
               [class.dragging]="isDraggingLogo"
               (dragover)="onDragOver($event, 'logo')"
               (dragleave)="onDragLeave($event, 'logo')"
-              (drop)="onDrop($event, 'logo')">
+              (drop)="onDrop($event, 'logo')"
+              (click)="logoInput.click()"
+              style="cursor: pointer;">
               <input
                 type="file"
                 #logoInput
@@ -474,7 +555,7 @@
                   <button
                     type="button"
                     class="btn-link"
-                    (click)="logoInput.click()">
+                    (click)="$event.stopPropagation(); logoInput.click()">
                     seleccioná desde tu equipo
                   </button>
                 </p>
@@ -483,6 +564,7 @@
           </div>
         </div>
       </div>
+
       <!-- Pestaña 3: HORARIOS DE ATENCIÓN -->
       <div
         *ngIf="pestanaAjustes === 'horarios'"
@@ -514,6 +596,7 @@
           </div>
         </div>
       </div>
+
       <!-- Pestaña 4: DÍAS DE CIERRE Y EXCEPCIONES -->
       <div
         *ngIf="pestanaAjustes === 'feriados'"
@@ -615,6 +698,7 @@
         </ul>
       </div>
     </div>
+
     <!-- Footer del Modal -->
     <footer
       class="modal-footer"
@@ -632,6 +716,7 @@
     </footer>
   </div>
 </div>
+
 <!-- MODAL NOTIFICACIONES (FEEDBACK) -->
 <div
   class="modal-overlay"

@@ -24,6 +24,7 @@ interface Servicio {
   descripcion?: string;
   precio: number;
   duracion: number;
+  foto_url?: string;
 }
 
 interface ExcepcionHorario {
