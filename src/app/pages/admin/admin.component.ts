@@ -42,6 +42,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   nombreUsuario: string = localStorage.getItem('usuario_nombre') || 'Admin';
+  cerrandoSesion: boolean = false;
   nombreBarberia: string = '';
   localIdUsuario: number | null = null;
 
@@ -863,12 +864,26 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  cerrarSesion() {
-    localStorage.removeItem('usuario_nombre');
-    this.supabaseService.logout();
-    this.router.navigate(['/login']);
-  }
+  async cerrarSesion() {
+    if (this.cerrandoSesion) return;
+    this.cerrandoSesion = true;
+    this.cdr.detectChanges();
 
+    try {
+      localStorage.removeItem('usuario_nombre');
+
+      // Intentamos cerrar sesión en Supabase limpiando canales
+      await this.supabaseService.logout();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    } finally {
+      // Redirigimos siempre al login
+      await this.router.navigate(['/login']);
+      this.cerrandoSesion = false;
+      this.cdr.detectChanges();
+    }
+  }
+  
   navegarA(ruta: string) {
     this.router.navigate([`/${ruta}`]);
   }

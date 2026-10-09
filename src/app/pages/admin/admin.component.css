@@ -96,6 +96,7 @@ button { cursor: pointer; }
 }
 
 .sidebar-footer { padding-top: 1rem; border-top: 1px solid var(--navy-3); }
+
 .btn-logout {
   width: 100%;
   padding: .65rem;
@@ -105,9 +106,37 @@ button { cursor: pointer; }
   color: #cbd5e1;
   font-weight: 500;
   transition: all .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
 }
-.btn-logout:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
-
+.btn-logout:hover:not(:disabled) {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+.btn-logout:disabled {
+  cursor: not-allowed;
+  opacity: .8;
+}
+.btn-logout.cerrando {
+  background: var(--navy-2);
+  border-color: var(--navy-3);
+  color: #fff;
+}
+.spinner-logout {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin-logout .7s linear infinite;
+}
+@keyframes spin-logout {
+  to { transform: rotate(360deg); }
+}
 /* ======================================================
    CONTENIDO
    ====================================================== */

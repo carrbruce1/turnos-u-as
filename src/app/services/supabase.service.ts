@@ -41,8 +41,22 @@ export class SupabaseService {
       .subscribe();
   }
 
-  removerCanal(channel: RealtimeChannel) {
-    this.supabase.removeChannel(channel);
+async removerCanal(channel: RealtimeChannel) {
+    if (channel) {
+      try {
+        await this.supabase.removeChannel(channel);
+      } catch (err) {
+        console.warn('Error al remover el canal Realtime:', err);
+      }
+    }
+  }
+
+  async removerTodosLosCanales() {
+    try {
+      await this.supabase.removeAllChannels();
+    } catch (err) {
+      console.warn('Error al remover todos los canales:', err);
+    }
   }
 
   // --- GESTIÓN DE LOCALES ---
