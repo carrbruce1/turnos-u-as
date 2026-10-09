@@ -865,25 +865,37 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   async cerrarSesion() {
+    // Evita doble clic mientras ya se está cerrando
     if (this.cerrandoSesion) return;
+
     this.cerrandoSesion = true;
     this.cdr.detectChanges();
 
     try {
       localStorage.removeItem('usuario_nombre');
 
-      // Intentamos cerrar sesión en Supabase limpiando canales
-      await this.supabaseService.logout();
+      // Cierre real: saca los canales de Realtime y cierra la sesión en Supabase
+      const cierre = (async () => {
+        await this.supabaseService.removerTodosLosCanales();
+        await this.supabaseService.logout();
+      })();
+
+      // Seguridad: si Supabase tarda demasiado, no dejamos la pantalla congelada
+      const tiempoMaximo = new Promise<void>(resolve => setTimeout(resolve, 4000));
+
+      // El spinner se ve al menos un instante, aunque el cierre sea muy rápido
+      const tiempoMinimo = new Promise<void>(resolve => setTimeout(resolve, 700));
+
+      await Promise.all([Promise.race([cierre, tiempoMaximo]), tiempoMinimo]);
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     } finally {
-      // Redirigimos siempre al login
+      // Siempre redirigimos al login
       await this.router.navigate(['/login']);
       this.cerrandoSesion = false;
-      this.cdr.detectChanges();
     }
   }
-  
+
   navegarA(ruta: string) {
     this.router.navigate([`/${ruta}`]);
   }

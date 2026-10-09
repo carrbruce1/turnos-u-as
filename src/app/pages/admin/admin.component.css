@@ -137,6 +137,42 @@ button { cursor: pointer; }
 @keyframes spin-logout {
   to { transform: rotate(360deg); }
 }
+
+/* ---------- Animación de salida al cerrar sesión ---------- */
+.admin-layout {
+  transition: opacity .55s ease, filter .55s ease;
+}
+.admin-layout.saliendo {
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.btn-logout {
+  transition: background .3s ease, border-color .3s ease, color .3s ease, opacity .3s ease;
+}
+/* Estado final: el botón confirma con verde y una tilde */
+.btn-logout.listo,
+.btn-logout.listo:hover,
+.btn-logout.listo:disabled {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+  opacity: 1;
+  cursor: default;
+}
+.check-logout {
+  font-weight: 700;
+  line-height: 1;
+  animation: checkPop .35s ease-out;
+}
+@keyframes checkPop {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
 /* ======================================================
    CONTENIDO
    ====================================================== */

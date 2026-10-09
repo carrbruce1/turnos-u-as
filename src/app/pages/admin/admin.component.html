@@ -34,11 +34,15 @@
       </button>
     </nav>
     <div class="sidebar-footer">
-  <button class="btn-logout" (click)="cerrandoSesion = true; cerrarSesion()" [disabled]="cerrandoSesion" [class.cerrando]="cerrandoSesion">
-    <span *ngIf="cerrandoSesion" class="spinner-logout"></span>
-    <span>{{ cerrandoSesion ? 'Cerrando sesión...' : 'Cerrar Sesión' }}</span>
-  </button>
-</div>
+      <button
+        class="btn-logout"
+        [class.cerrando]="cerrandoSesion"
+        [disabled]="cerrandoSesion"
+        (click)="cerrarSesion()">
+        <span *ngIf="cerrandoSesion" class="spinner-logout"></span>
+        <span>{{ cerrandoSesion ? 'Cerrando sesión...' : 'Cerrar Sesión' }}</span>
+      </button>
+    </div>
   </aside>
 
   <!-- Contenido Principal -->
