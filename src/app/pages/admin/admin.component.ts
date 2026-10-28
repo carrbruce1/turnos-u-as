@@ -900,10 +900,18 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.router.navigate([`/${ruta}`]);
   }
 
-  verPaginaPublica() {
+  
+  async verPaginaPublica() {
     if (this.localIdUsuario) {
-      // Abre la página de reservas del local en una pestaña nueva
-      window.open(`/home/${this.localIdUsuario}`, '_blank');
+      try {
+        const local = await this.supabaseService.obtenerLocalPorId(this.localIdUsuario);
+        // Si el local tiene un slug configurado lo usa, si no, transforma el nombre a formato URL (ej: "New Nails" -> "new-nails")
+        const slugLocal = local?.slug || (local?.nombre || local?.Nombre || '').toLowerCase().replace(/\s+/g, '-');
+        
+        window.open(`/${slugLocal}`, '_blank');
+      } catch (err) {
+        window.open(`/home/${this.localIdUsuario}`, '_blank');
+      }
     } else {
       window.open('/home/1', '_blank');
     }
