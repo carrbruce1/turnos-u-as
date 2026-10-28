@@ -5,6 +5,14 @@
       <h2>{{ nombreBarberia || 'Panel Admin' }}</h2>
       <p class="user-name">Hola, {{ nombreUsuario }}</p>
     </div>
+
+    <!-- Botón para ver la página pública del local -->
+    <div class="sidebar-action-container" style="padding: 0 1.25rem 1rem;">
+      <button class="btn-ver-catalogo" (click)="verPaginaPublica()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: #fff; font-weight: 600; cursor: pointer; transition: background 0.2s;">
+        <span>🛍️ Ver página</span>
+      </button>
+    </div>
+
     <nav class="menu">
       <button
         class="menu-item"

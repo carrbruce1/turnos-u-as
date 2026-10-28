@@ -899,4 +899,13 @@ export class AdminComponent implements OnInit, OnDestroy {
   navegarA(ruta: string) {
     this.router.navigate([`/${ruta}`]);
   }
+
+  verPaginaPublica() {
+    if (this.localIdUsuario) {
+      // Abre la página de reservas del local en una pestaña nueva
+      window.open(`/home/${this.localIdUsuario}`, '_blank');
+    } else {
+      window.open('/home/1', '_blank');
+    }
+  }
 }
