@@ -41,7 +41,7 @@ export class SupabaseService {
       .subscribe();
   }
 
-async removerCanal(channel: RealtimeChannel) {
+  async removerCanal(channel: RealtimeChannel) {
     if (channel) {
       try {
         await this.supabase.removeChannel(channel);
@@ -118,7 +118,7 @@ async removerCanal(channel: RealtimeChannel) {
       .select();
   }
 
-  // --- GESTIÓN DE SERVICIOS (Con soporte para descripción y foto_url) ---
+  // --- GESTIÓN DE SERVICIOS ---
 
   async obtenerServiciosPorLocal(localId: number) {
     return await this.supabase
@@ -321,10 +321,18 @@ async removerCanal(channel: RealtimeChannel) {
     return await this.login(email, password || '');
   }
 
-  // Método para solicitar el mail de restablecimiento de contraseña
   async resetPasswordForEmail(email: string) {
     return await this.supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`
+    });
+  }
+
+  // --- MÉTODO DE REGISTRO DE USUARIOS ---
+  async signUpUser(email: string, password: string, options?: { data?: object }) {
+    return await this.supabase.auth.signUp({
+      email,
+      password,
+      options
     });
   }
 }
