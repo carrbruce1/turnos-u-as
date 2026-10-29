@@ -16,8 +16,8 @@ export const routes: Routes = [
   },
 
   {
-    path: 'home',
-    redirectTo: 'home/1',
+    path: 'login',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -32,7 +32,7 @@ export const routes: Routes = [
 
   {
     path: '',
-    redirectTo: 'home/1',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
 
