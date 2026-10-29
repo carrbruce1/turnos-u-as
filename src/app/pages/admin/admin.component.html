@@ -17,7 +17,7 @@
     </div>
 
     <button class="btn-ver-catalogo" type="button" (click)="verPaginaPublica()">
-      <span>↗</span> Ver página del local
+     Ver página del local
     </button>
 
     <div class="menu-label">MENÚ PRINCIPAL</div>
@@ -72,7 +72,7 @@
         [class.cerrando]="cerrandoSesion"
         [disabled]="cerrandoSesion"
         (click)="cerrarSesion()">
-        <span>{{ cerrandoSesion ? 'Cerrando sesión...' : '↪ Cerrar sesión' }}</span>
+        <span>{{ cerrandoSesion ? 'Cerrando sesión...' : ' Cerrar sesión' }}</span>
       </button>
     </div>
   </aside>
@@ -84,7 +84,6 @@
         <div>
           <span class="eyebrow">GESTIÓN DEL LOCAL</span>
           <h1>Turnos</h1>
-          <!-- <p>Administrá las reservas y el estado de cada cita.</p> -->
         </div>
 
         <div class="live-indicator">
@@ -123,7 +122,6 @@
         <div class="card-heading">
           <div>
             <h2>Listado de turnos</h2>
-            <!-- <p>Buscá clientes y filtrá las reservas por estado.</p> -->
           </div>
           <span class="count-label">{{ turnosFiltrados.length }} resultados</span>
         </div>
@@ -163,23 +161,23 @@
 
             <tbody>
               <tr *ngFor="let turno of turnosFiltrados">
-                <td>
+                <td data-label="Cliente">
                   <div class="client-cell">
                     <span class="client-avatar">{{ (turno.nombre_cliente || 'C').charAt(0).toUpperCase() }}</span>
                     <strong>{{ turno.nombre_cliente || 'Sin nombre' }}</strong>
                   </div>
                 </td>
-                <td>{{ turno.telefono_cliente || '-' }}</td>
-                <td>{{ turno.servicio || 'General' }}</td>
-                <td class="notas-cell">{{ turno.notas || '-' }}</td>
-                <td>{{ formatearFechaLatina(turno.fecha) }}</td>
-                <td>{{ turno.hora }} hs</td>
-                <td>
+                <td data-label="Teléfono">{{ turno.telefono_cliente || '-' }}</td>
+                <td data-label="Servicio">{{ turno.servicio || 'General' }}</td>
+                <td data-label="Notas" >{{ turno.notas || '-' }}</td>
+                <td data-label="Fecha">{{ formatearFechaLatina(turno.fecha) }}</td>
+                <td data-label="Hora">{{ turno.hora }} hs</td>
+                <td data-label="Estado">
                   <span class="badge" [ngClass]="turno.estado">
                     {{ textoEstado(turno.estado) }}
                   </span>
                 </td>
-                <td>
+                <td data-label="Acciones">
                   <div class="acciones-turno" *ngIf="turno.estado !== 'finalizado' && turno.estado !== 'rechazado'">
                     <button
                       type="button"
@@ -253,18 +251,18 @@
 
             <tbody>
               <tr *ngFor="let turno of historialFiltrado">
-                <td>
+                <td data-label="Cliente">
                   <div class="client-cell">
                     <span class="client-avatar">{{ (turno.nombre_cliente || 'C').charAt(0).toUpperCase() }}</span>
                     <strong>{{ turno.nombre_cliente || 'Sin nombre' }}</strong>
                   </div>
                 </td>
-                <td>{{ turno.telefono_cliente || '-' }}</td>
-                <td>{{ turno.servicio || 'General' }}</td>
-                <td class="notas-cell">{{ turno.notas || '-' }}</td>
-                <td>{{ formatearFechaLatina(turno.fecha) }}</td>
-                <td>{{ turno.hora }} hs</td>
-                <td><span class="badge finalizado">Finalizado</span></td>
+                <td data-label="Teléfono">{{ turno.telefono_cliente || '-' }}</td>
+                <td data-label="Servicio">{{ turno.servicio || 'General' }}</td>
+                <td data-label="Notas" class="notas-cell">{{ turno.notas || '-' }}</td>
+                <td data-label="Fecha">{{ formatearFechaLatina(turno.fecha) }}</td>
+                <td data-label="Hora">{{ turno.hora }} hs</td>
+                <td data-label="Estado"><span class="badge finalizado">Finalizado</span></td>
               </tr>
 
               <tr *ngIf="historialFiltrado.length === 0">
